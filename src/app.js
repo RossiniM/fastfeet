@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import routes from './routes';
 import './database';
 
@@ -11,6 +13,8 @@ class App {
 
   middleware() {
     this.server.use(express.json());
+    this.server.use(cors());
+    this.server.use(cookieParser());
   }
 
   routes() {
