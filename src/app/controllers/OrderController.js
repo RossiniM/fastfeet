@@ -1,7 +1,8 @@
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
-import Mail from '../../lib/Mail';
+import Queue from '../../lib/Queue';
+import RegistrationMail from '../jobs/RegistrationMail';
 
 class OrderController {
   async index(req, res) {
@@ -23,17 +24,8 @@ class OrderController {
         .json({ error: 'Deliveryman or Recipient not found' });
     }
     const order = await Order.create(req.body);
+    Queue.add(RegistrationMail.key, { deliveryman, recipient, order });
 
-    await Mail.sendMail({
-      to: `${deliveryman.name} <${deliveryman.email}>`,
-      subject: 'Cadastro de encomenda',
-      template: 'registration',
-      context: {
-        deliveryman: deliveryman.name,
-        recipient: recipient.name,
-        product: order.product,
-      },
-    });
     return res.status(200).json(order);
   }
 
