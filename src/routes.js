@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import userController from './app/controllers/UserController';
 import recipientsController from './app/controllers/RecipientsController';
-import courierController from './app/controllers/CourierController';
+import deliveryManController from './app/controllers/DeliverymanController';
+import orderController from './app/controllers/OrderController';
+
 import userSession from './app/controllers/SessionController';
 import authMiddleware from './app/middleware/auth';
 
@@ -17,9 +19,14 @@ routes.post('/user', authMiddleware, userController.store);
 
 routes.post('/recipient', authMiddleware, recipientsController.store);
 
-routes.get('/courier', authMiddleware, courierController.index);
-routes.post('/courier', authMiddleware, courierController.store);
-routes.put('/courier/:id', authMiddleware, courierController.update);
-routes.delete('/courier/:id', authMiddleware, courierController.delete);
+routes.get('/deliveryman', authMiddleware, deliveryManController.index);
+routes.post('/deliveryman', authMiddleware, deliveryManController.store);
+routes.put('/deliveryman/:id', authMiddleware, deliveryManController.update);
+routes.delete('/deliveryman/:id', authMiddleware, deliveryManController.delete);
+
+routes.get('/order', authMiddleware, orderController.index);
+routes.post('/order', authMiddleware, orderController.store);
+routes.put('/order/:id', authMiddleware, orderController.update);
+routes.delete('/order/:id', authMiddleware, orderController.delete);
 
 export default routes;

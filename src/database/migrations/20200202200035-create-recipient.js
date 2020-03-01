@@ -24,7 +24,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      additionalInfo: {
+      additional_info: {
         type: Sequelize.STRING,
         allowNull: true,
       },
