@@ -24,8 +24,9 @@ module.exports = {
       signature_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
-        autoIncrement: false,
-        primaryKey: false,
+        references: { model: 'deliverymans', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       product: {
         type: Sequelize.STRING,
