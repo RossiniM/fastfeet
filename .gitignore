@@ -2,3 +2,4 @@
 /yarn*
 .env
 /.idea
+/tmp/uploads
