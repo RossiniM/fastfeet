@@ -1,22 +1,28 @@
 import { Op } from 'sequelize';
 import {
-  startOfHour,
-  parseISO,
+  startOfDay,
+  endOfDay,
   isBefore,
   isAfter,
   setHours,
   setMinutes,
   setSeconds,
-  format,
-  subHougetrs,
 } from 'date-fns';
+
+import { utcToZonedTime } from 'date-fns-tz';
 import Deliveryman from '../models/Deliveryman';
 import Order from '../models/Order';
 import fileController from './FileController';
 
 const isAllowedTime = (openHours, closedHours) => {
-  console.log('open', openHours, 'closed', closedHours);
   console.log(new Date());
+  console.log('open', openHours, isAfter(new Date(), openHours));
+  console.log('closed', isBefore(new Date(), closedHours));
+  console.log(
+    'closed',
+    isAfter(new Date(), openHours) && isBefore(new Date(), closedHours)
+  );
+
   return isAfter(new Date(), openHours) && isBefore(new Date(), closedHours);
 };
 
@@ -72,37 +78,46 @@ class TrackingController {
         console.log(error);
       }
     }
-    const openHours = setHours(setMinutes(setSeconds(new Date(), 0), 0), 0);
-    const closedHours = setHours(setMinutes(setSeconds(new Date(), 0), 0), 18);
+    const timeZone = 'America/Sao_Paulo';
+    const date = utcToZonedTime(new Date().getTime(), { timeZone });
+    console.log('local', date);
+    console.log(new Date());
+    const openHours = setSeconds(setMinutes(setHours(date, '08'), '00'), 0);
+    const closedHours = setHours(
+      setMinutes(setSeconds(new Date().getTime(), 0), 0),
+      19
+    );
 
-    if (!isAllowedTime(openHours, closedHours))
+    if (!isAllowedTime(openHours, closedHours)) {
       return res
-        .status(400)
+        .status(401)
         .json({ error: 'It is not alllowed to retrieve order at this time' });
-
-    const numberRetrieve = await Order.findAndCountAll({
+    }
+    const { count } = await Order.findAndCountAll({
       where: {
         deliveryman_id,
-        end_date: {
-          [Op.between]: [openHours, closedHours],
+        start_date: {
+          [Op.between]: [startOfDay(openHours), endOfDay(openHours)],
         },
       },
     });
-    if (numberRetrieve > 5)
+    if (count > 5) {
       return res.status(400).json({
-        error: 'It is not alllowed to retrieve more than 5 orders at day',
+        error: 'It is not alllowed to retrieve more than five time  at day',
       });
+    }
     const order = await Order.update(
       {
         start_date: new Date(),
       },
       {
         where: {
-          id: req.params.id,
+          id: order_id,
         },
       }
     );
-    return res.status(200).json({ order });
+    console.log('here');
+    return res.status(200).json(order);
   }
 }
 

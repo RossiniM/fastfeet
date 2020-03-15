@@ -1,16 +1,44 @@
 import * as Yup from 'yup';
 import Deliveryman from '../models/Deliveryman';
+import fileController from './FileController';
+
+async function isDataValid(data) {
+  const schema = Yup.object().shape({
+    name: Yup.string().required(),
+    email: Yup.string()
+      .email()
+      .required(),
+  });
+  return schema.isValid(data);
+}
+async function deliveryManExists(email) {
+  const currentDeliveryMan = await Deliveryman.findOne({
+    where: {
+      email,
+    },
+  });
+  return currentDeliveryMan;
+}
 
 class DeliveryManController {
   async store(req, res) {
-    if (!(await isDataValid(req)))
-      return res.status(400).json({ error: 'Validation fails' });
+    if (req.file) {
+      const { name, email } = req.query;
 
-    if (await deliveryManExists(req))
-      return res.status(400).json({ error: 'Email already used' });
+      if (!(await isDataValid({ name, email })))
+        return res.status(400).json({ error: 'Validation fails' });
 
-    const courier = Deliveryman.create(req.body);
-    return res.status(200).json({ courier });
+      if (await deliveryManExists(email))
+        return res.status(400).json({ error: 'Email already used' });
+      const { id } = await fileController.store(req, res);
+      const deliveryMan = await Deliveryman.create({
+        name,
+        email,
+        avatar_id: id,
+      });
+      return res.status(200).json(deliveryMan);
+    }
+    return req.status(400).json({ error: 'An image is required' });
   }
 
   async index(req, res) {
@@ -19,7 +47,7 @@ class DeliveryManController {
   }
 
   async update(req, res) {
-    if (!(await isDataValid(req)))
+    if (!(await isDataValid(req.body)))
       return res.status(400).json({ error: 'Validation fails' });
 
     const courier = await Deliveryman.findByPk(req.params.id);
@@ -42,23 +70,3 @@ class DeliveryManController {
 }
 
 export default new DeliveryManController();
-
-async function isDataValid(req) {
-  const schema = Yup.object().shape({
-    name: Yup.string().required(),
-    avatar_id: Yup.number(),
-    email: Yup.string()
-      .email()
-      .required(),
-  });
-  return schema.isValid(req.body);
-}
-async function deliveryManExists(req) {
-  const { email } = req.body;
-  const currentDeliveryMan = await Deliveryman.findOne({
-    where: {
-      email,
-    },
-  });
-  return currentDeliveryMan;
-}

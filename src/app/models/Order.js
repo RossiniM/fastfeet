@@ -36,6 +36,11 @@ class Order extends Model {
       foreignKey: 'deliveryman_id',
       as: 'delivery',
     });
+
+    this.belongsTo(models.File, {
+      foreignKey: 'signature_id',
+      as: 'signature',
+    });
   }
 
   static isValid(order) {
