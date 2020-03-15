@@ -4,7 +4,7 @@ A delivery system that allows admin to register a delivery order to especific de
 </h4>
 This project was developed at the [RocketSeat GoStack Bootcamp](https://rocketseat.com.br/bootcamp) with the following technologies:
 
--  [Node.js][nodejs]
+-  Node.js
 -  [Express](https://expressjs.com/)
 -  [nodemon](https://nodemon.io/)
 -  [Sucrase](https://github.com/alangpierce/sucrase)
@@ -25,7 +25,7 @@ This project was developed at the [RocketSeat GoStack Bootcamp](https://rocketse
 -  [date-fns](https://date-fns.org/)
 -  [Sentry](https://sentry.io/)
 -  [DotEnv](https://www.npmjs.com/package/dotenv)
--  [VS Code][vc] with [ESLint][vceslint]
+-  VS Code with ESLint
 
 memo License
 This project is under the MIT license. See the LICENSE for more information.
