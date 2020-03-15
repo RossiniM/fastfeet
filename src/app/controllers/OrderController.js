@@ -3,6 +3,13 @@ import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
 import Queue from '../../lib/Queue';
 import RegistrationMail from '../jobs/RegistrationMail';
+import CancellationMail from '../jobs/CancellationMail';
+
+async function getDeliveryAndRecipient(recipient_id, deliveryman_id) {
+  const recipient = await Recipient.findByPk(recipient_id);
+  const deliveryman = await Deliveryman.findByPk(deliveryman_id);
+  return { recipient, deliveryman };
+}
 
 class OrderController {
   async index(req, res) {
@@ -29,6 +36,25 @@ class OrderController {
     return res.status(200).json(order);
   }
 
+  async cancel(req, res) {
+    const { id } = req.params;
+    const order = await Order.findByPk(id);
+    const { recipient, deliveryman } = await getDeliveryAndRecipient(
+      order.recipient_id,
+      order.deliveryman_id
+    );
+    const updateOrder = await Order.update(
+      { canceled_at: new Date() },
+      {
+        where: {
+          id: order.id,
+        },
+      }
+    );
+    Queue.add(CancellationMail.key, { deliveryman, recipient, order });
+    return res.status(200).json(updateOrder);
+  }
+
   async delete(req, res) {
     const { id } = req.params;
     const order = Order.findByPk(id);
@@ -45,9 +71,3 @@ class OrderController {
 }
 
 export default new OrderController();
-
-async function getDeliveryAndRecipient(recipient_id, deliveryman_id) {
-  const recipient = await Recipient.findByPk(recipient_id);
-  const deliveryman = await Deliveryman.findByPk(deliveryman_id);
-  return { recipient, deliveryman };
-}
