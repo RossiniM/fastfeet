@@ -30,7 +30,7 @@ class SessionController {
 
     return res
       .cookie('token', token, {
-        expires: new Date(Date.now() + 60000),
+        expires: new Date(Date.now() + 600000),
         secure: false,
         httpOnly: true,
       })

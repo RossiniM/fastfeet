@@ -11,7 +11,7 @@ class RecipientController {
       street,
       number,
       state,
-      additionalInfo,
+      additional_info,
       zipcode,
     } = req.body;
 
@@ -21,7 +21,7 @@ class RecipientController {
       street,
       number,
       state,
-      additionalInfo,
+      additional_info,
       zipcode,
     });
 

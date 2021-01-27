@@ -8,7 +8,7 @@ export const schema = Yup.object().shape({
     .required(),
   street: Yup.string().required(),
   number: Yup.number().required(),
-  additionalInfo: Yup.string(),
+  additional_info: Yup.string(),
   state: Yup.string().required(),
   zipcode: Yup.string().required(),
 });
@@ -21,7 +21,7 @@ class Recipient extends Model {
         email: Sequelize.STRING,
         street: Sequelize.STRING,
         number: Sequelize.INTEGER,
-        additionalInfo: Sequelize.STRING,
+        additional_info: Sequelize.STRING,
         state: Sequelize.STRING,
         zipcode: Sequelize.STRING,
       },
@@ -29,6 +29,7 @@ class Recipient extends Model {
         sequelize,
       }
     );
+    return this;
   }
 
   static isValid(recipient) {
